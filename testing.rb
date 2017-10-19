@@ -66,7 +66,6 @@ def save_game(game, name)
   File.open("saved_games/#{name}.yaml", "w") do |file|
     file.puts YAML::dump(game)
   end
-  puts "game saved, should be here for you when you come back!"
 end
 
 def load_game(name)
@@ -83,64 +82,4 @@ def list_saved_games
   games.map! { |x| x.scan(/(?<=saved_games\/)(.*)(?=\.yaml)/)  }
   games.flatten!
   games.each_with_index {|x,i| puts "#{i+1}) #{x} \n"}
-end
-
-
-def game_turn(game)
-  until game.count == 0 || game.hint == game.word
-    puts "Here is your hint:"
-    game.show_hint
-    user_input = game.get_input
-    game.guess(user_input)
-    puts "You have #{game.count-1} misses left"
-  end
-end
-
-def end_game(game)
-  if game.count == 0
-    puts "sorry, you hanged, man"
-    puts "the word was #{game.word.join('')}"
-  else
-    puts "nice, you got it!"
-    puts "the word was #{game.word.join('')}"
-  end
-end
-
-
-########## game flow ###########
-
-puts "Welcome to Hangman"
-
-
-choice = 0
-until choice == 1 || choice == 2
-  puts "Please select a choice"
-  puts "1) New Game \n2) Load Game"
-  choice = gets.chomp.to_i
-end
-
-if choice == 1
-
-  game = Game.new
-  game_turn(game)
-  end_game(game)
-
-elsif choice == 2
-
-  chosen_game = -1
-  until chosen_game > -1 && chosen_game < (list_saved_games.length + 1)
-    puts "please choose a game"
-    list_saved_games
-    chosen_game = gets.chomp.to_i
-  end
-  chosen_game_string = list_saved_games[chosen_game-1]
-
-  game = load_game(chosen_game_string)
-
-  puts "nice, you loaded a game"
-  puts "You have #{game.count-1} misses left"
-
-  game_turn(game)
-  end_game(game)
-
 end
